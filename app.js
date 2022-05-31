@@ -1,5 +1,6 @@
 var createError = require('http-errors');
 var express = require('express');
+const mongoose = require('mongoose');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
@@ -9,8 +10,23 @@ var usersRouter = require('./routes/users');
 const dishRouter = require('./routes/dishRouter');
 const leaderRouter = require('./routes/leaderRouter');
 const promoRouter = require('./routes/promoRouter');
+const Dishes = require('./models/dishes')
 
 var app = express();
+
+
+
+
+//const url = 'mongodb://localhost:27017/conFusion';
+const url = 'mongodb+srv://farith:123@cluster0.fadgzqe.mongodb.net/?retryWrites=true&w=majority'
+const connect = mongoose.connect(url);
+
+
+connect.then ((db) => {
+  console.log('connected server...')
+}, (err) => {console.log(err)})
+
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
