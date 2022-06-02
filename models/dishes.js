@@ -4,8 +4,6 @@ const Currency = mongoose.Types.Currency;
 
 const Schema = mongoose.Schema;
 
-
-
 var commentSchema = new Schema({
     rating:  {
         type: Number,
