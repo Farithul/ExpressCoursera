@@ -6,7 +6,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var session = require('express-session');
 var FileStore = require('session-file-store')(session);
-
+var config = require('./config');
 var passport = require('passport');
 var authenticate = require('./authenticate');
 var indexRouter = require('./routes/index');
@@ -17,12 +17,13 @@ const promoRouter = require('./routes/promoRouter');
 
 
 
+
 var app = express();
 
 
 
 //const url = 'mongodb://localhost:27017/conFusion';
-const url = 'mongodb+srv://farith:123@cluster0.fadgzqe.mongodb.net/?retryWrites=true&w=majority'
+const url = config.mongoUrl;
 const connect = mongoose.connect(url);
 
 
@@ -48,22 +49,6 @@ app.use('/users', usersRouter);
 
 
 
-function auth (req, res, next) {
-  console.log(req.user);
-
-  if (!req.user) {
-    var err = new Error('You are not authenticated!');
-    err.status = 403;
-    next(err);
-  }
-  else {
-        next();
-  }
-}
-
-
-
-app.use(auth);
 
 
 
