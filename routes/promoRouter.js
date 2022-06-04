@@ -30,6 +30,8 @@ promoRouter.route('/')
 })
 
 .post(authenticate.verifyUser,(req, res, next) => {
+  if(req.user.admin == true)
+  { 
   Promotions.create(req.body)
   .then((promotion) => {
       console.log('promotion Created ', promotion);
@@ -38,6 +40,13 @@ promoRouter.route('/')
       res.json(promotion);
   }, (err) => next(err))
   .catch((err) => next(err));
+}
+  else{
+    var err = new Error('You are not authorized to perform this operation!');
+    err.status = 403;
+    next(err);
+
+  }
 })
 
 .put(authenticate.verifyUser,(req, res, next) => {
@@ -45,13 +54,22 @@ promoRouter.route('/')
   res.end('PUT operation not supported on /Promotions');
 })
 .delete(authenticate.verifyUser,(req, res, next) => {
+  if(req.user.admin == true)
+  {
   Promotions.remove({})
   .then((resp) => {
       res.statusCode = 200;
       res.setHeader('Content-Type', 'application/json');
       res.json(resp);
   }, (err) => next(err))
-  .catch((err) => next(err));    
+  .catch((err) => next(err));   
+}
+  else{
+    var err = new Error('You are not authorized to perform this operation!');
+    err.status = 403;
+    next(err);
+
+  } 
 });
 
 
@@ -70,6 +88,8 @@ promoRouter.route('/:promoId')
     res.end('POST operation not supported on /dishes/'+ req.params.promoId);
 })
 .put(authenticate.verifyUser,(req, res, next) => {
+  if(req.user.admin == true)
+  {
   Promotions.findByIdAndUpdate(req.params.promoId, {
         $set: req.body
     }, { new: true })
@@ -79,15 +99,33 @@ promoRouter.route('/:promoId')
         res.json(promotion);
     }, (err) => next(err))
     .catch((err) => next(err));
+  }
+    else{
+      var err = new Error('You are not authorized to perform this operation!');
+      err.status = 403;
+      next(err);
+  
+    }
 })
 .delete(authenticate.verifyUser,(req, res, next) => {
-  Promotions.findByIdAndRemove(req.params.promoId)
+
+  if(req.user.admin == true)
+  {
+
+    Promotions.findByIdAndRemove(req.params.promoId)
     .then((resp) => {
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
         res.json(resp);
     }, (err) => next(err))
     .catch((err) => next(err));
+  }
+    else{
+      var err = new Error('You are not authorized to perform this operation!');
+      err.status = 403;
+      next(err);
+  
+    }
 });
 
 

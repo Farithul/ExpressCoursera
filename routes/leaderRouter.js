@@ -30,7 +30,10 @@ leaderRouter.route('/')
     .catch((err) => next(err));
 })
 
-.post(authenticate.verifyUser,(req, res, next) => {
+.post(authenticate.verifyAdminUser,(req, res, next) => {
+  if(req.user.admin == true)
+  {
+
   Leaders.create(req.body)
   .then((Leaders) => {
       console.log('leader Created ', Leaders);
@@ -38,21 +41,36 @@ leaderRouter.route('/')
       res.setHeader('Content-Type', 'application/json');
       res.json(Leaders);
   }, (err) => next(err))
-  .catch((err) => next(err));
+  .catch((err) => next(err));}
+  else{
+    var err = new Error('You are not authorized to perform this operation!');
+    err.status = 403;
+    next(err);
+
+  } 
 })
 
-.put(authenticate.verifyUser,(req, res, next) => {
+.put(authenticate.verifyAdminUser,(req, res, next) => {
   res.statusCode = 403;
   res.end('PUT operation not supported on /Promotions');
 })
-.delete(authenticate.verifyUser,(req, res, next) => {
+.delete(authenticate.verifyAdminUser,(req, res, next) => {
+  if(req.user.admin == true)
+  {
   Leaders.remove({})
   .then((resp) => {
       res.statusCode = 200;
       res.setHeader('Content-Type', 'application/json');
       res.json(resp);
   }, (err) => next(err))
-  .catch((err) => next(err));    
+  .catch((err) => next(err));  
+}
+  else{
+    var err = new Error('You are not authorized to perform this operation!');
+    err.status = 403;
+    next(err);
+
+  }   
 });
 
 
@@ -67,11 +85,13 @@ leaderRouter.route('/:leaderId')
     }, (err) => next(err))
     .catch((err) => next(err));
 })
-.post(authenticate.verifyUser,(req, res, next) => {
+.post(authenticate.verifyAdminUser,(req, res, next) => {
     res.statusCode = 403;
     res.end('POST operation not supported on /leader/'+ req.params.leaderId);
 })
-.put(authenticate.verifyUser,(req, res, next) => {
+.put(authenticate.verifyAdminUser,(req, res, next) => {
+  if(req.user.admin == true)
+  {
   Leaders.findByIdAndUpdate(req.params.leaderId, {
         $set: req.body
     }, { new: true })
@@ -81,8 +101,19 @@ leaderRouter.route('/:leaderId')
         res.json(Leaders);
     }, (err) => next(err))
     .catch((err) => next(err));
+  }
+    else{
+      var err = new Error('You are not authorized to perform this operation!');
+      err.status = 403;
+      next(err);
+  
+    } 
 })
-.delete(authenticate.verifyUser,(req, res, next) => {
+.delete(authenticate.verifyAdminUser,(req, res, next) => {
+  if(req.user.admin == true)
+  {
+
+  
   Leaders.findByIdAndRemove(req.params.leaderId)
     .then((resp) => {
         res.statusCode = 200;
@@ -90,6 +121,13 @@ leaderRouter.route('/:leaderId')
         res.json(resp);
     }, (err) => next(err))
     .catch((err) => next(err));
+  }
+    else{
+      var err = new Error('You are not authorized to perform this operation!');
+      err.status = 403;
+      next(err);
+  
+    } 
 });
 
 
